@@ -1,0 +1,23 @@
+{
+  "name": "npm-webpack",
+  "version": "1.0.0",
+  "description": "This will automatically export peerDependencies from the package.json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ofersadgat/npm-webpack.git"
+  },
+  "keywords": [
+    "npm",
+    "webpack"
+  ],
+  "author": "Ofer Sadgat",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/ofersadgat/npm-webpack/issues"
+  },
+  "homepage": "https://github.com/ofersadgat/npm-webpack#readme"
+}
