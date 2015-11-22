@@ -4,13 +4,15 @@ var path = require('path');
 
 var ExternalModuleFactoryPlugin = require("webpack/lib/ExternalModuleFactoryPlugin");
 
-function MistPlugin(options) {
-  
+function NpmPlugin(options) {
+  options = options || {};
+  options.type = options.type || 'commonjs';
+  options.packageJsonKeys = options.packageJsonKeys || ['peerDependencies', 'externalDependencies'];
+  this.options = options;
 }
 
-MistPlugin.prototype.apply = function(compiler) {
+NpmPlugin.prototype.apply = function(compiler) {
   compiler.plugin('compile', function(params) {
-    console.log('compile: ', params, '\n\n\n');
 
     var packageJsonPath = path.resolve(params.normalModuleFactory.context, 'package.json');
     if (fs.existsSync(packageJsonPath)){
@@ -23,13 +25,20 @@ MistPlugin.prototype.apply = function(compiler) {
         return;
       }
 
-      var exportedModules = packageJson.peerDependencies || {};
+      var exportedModules = {};
+      this.options.packageJsonKeys.forEach(function(packageJsonKey){
+        var currentExportedModules = packageJson[packageJsonKey];
+        if (currentExportedModules){
+          Object.keys(currentExportedModules).forEach(function(exportedModule){
+            exportedModules[exportedModule] = currentExportedModules[exportedModule];
+          });
+        }
+      });
       if (Object.keys(exportedModules).length > 0){
         Object.keys(exportedModules).forEach(function(exportedModule){
           exportedModules[exportedModule] = exportedModule;
         });
-        console.log('exporting: ', exportedModules);
-        params.normalModuleFactory.apply(new ExternalModuleFactoryPlugin('commonjs', exportedModules));
+        params.normalModuleFactory.apply(new ExternalModuleFactoryPlugin(this.options.type, exportedModules));
       }
 
       this.packageJson = packageJson;
@@ -38,4 +47,4 @@ MistPlugin.prototype.apply = function(compiler) {
 
 };
 
-module.exports = MistPlugin;
+module.exports = NpmPlugin;
